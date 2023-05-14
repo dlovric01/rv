@@ -7,7 +7,8 @@ part 'image_data.freezed.dart';
 @freezed
 class ImageData with _$ImageData {
   const factory ImageData({
-    required File file,
+    File? file,
     String? name,
+    int? faceCount,
   }) = _ImageData;
 }

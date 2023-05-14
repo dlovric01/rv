@@ -11,9 +11,10 @@ var url =
 Future<ImageData> sendImageForProcessing(File file) async {
   try {
     List<int> imageBytes = await file.readAsBytes();
+    String base64 = base64Encode(imageBytes);
 
     final body = {
-      'image': imageBytes.toString(),
+      'image': base64,
     };
 
     final response = await http.post(
@@ -23,21 +24,15 @@ Future<ImageData> sendImageForProcessing(File file) async {
     );
 
     final sourceData = json.decode(response.body);
+
     final name = sourceData['name'];
-    if (sourceData['faceNotFound'] == 'true') {
-      throw Exception('Face not found');
-    }
-    final listOfBytes =
-        jsonDecode((sourceData['imageProcessed'])) as List<dynamic>;
+    final bytes = base64Decode(sourceData['modified_image_data']);
+    final processedFile = await File(file.path).writeAsBytes(bytes);
 
-    final processedFileInBytes =
-        listOfBytes.map<int>((value) => value as int).toList();
-
-    final processedFile = File(file.path);
-    await processedFile.writeAsBytes(processedFileInBytes);
     return ImageData(
-      file: file,
+      file: processedFile,
       name: name != 'unknown' ? name : null,
+      faceCount: sourceData['face_count'],
     );
   } catch (e) {
     rethrow;

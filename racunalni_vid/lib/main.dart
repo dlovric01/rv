@@ -47,20 +47,11 @@ class _CameraAppState extends State<CameraApp> {
                   return BlocListener<CameraCubit, CameraState>(
                     listener: (context, state) {
                       state.when(
-                        imageState:
-                            (file, isLoading, controller, _, faceNotFound) {
-                          if (faceNotFound) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                                    content: Text(
-                              'Face not found',
-                              style: TextStyle(
-                                fontSize: 40,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                            )));
-                          }
+                        imageState: (
+                          imageData,
+                          isLoading,
+                          controller,
+                        ) {
                           if (state.isLoading) {
                             context.loaderOverlay.show();
                           } else {
@@ -72,15 +63,19 @@ class _CameraAppState extends State<CameraApp> {
                     child: BlocBuilder<CameraCubit, CameraState>(
                       builder: (context, state) {
                         return state.when(
-                          imageState: (file, _, controller, __, ___) {
-                            if (file == null && controller != null) {
+                          imageState: (
+                            imageData,
+                            _,
+                            controller,
+                          ) {
+                            if (imageData.file == null && controller != null) {
                               return CameraWidget(
                                 controller: controller,
                                 cameraCubit: _cameraCubit,
                               );
-                            } else if (file != null) {
+                            } else if (imageData.file != null) {
                               return GeneratedImagePreview(
-                                file: file,
+                                file: imageData.file!,
                                 cameraCubit: _cameraCubit,
                               );
                             } else {
@@ -122,25 +117,39 @@ class GeneratedImagePreview extends StatelessWidget {
                 Image.file(
                   File(file.path),
                 ),
-                if (state.name != null && !state.faceNotFound)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: Text(
-                      state.name!,
-                      style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.white,
-                        backgroundColor: Colors.black,
-                      ),
-                    ),
-                  )
+                // if (state.imageData!.name != null && !state.faceNotFound)
+                //   Padding(
+                //     padding: const EdgeInsets.only(bottom: 40),
+                //     child: Text(
+                //       state.name!,
+                //       style: const TextStyle(
+                //         fontSize: 40,
+                //         color: Colors.white,
+                //         backgroundColor: Colors.black,
+                //       ),
+                //     ),
+                //   )
               ],
             ),
-            IconButton(
-                onPressed: () {
-                  cameraCubit.clearState();
-                },
-                icon: const Icon(Icons.arrow_back))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    cameraCubit.clearState();
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                if (state.imageData.faceCount == 0)
+                  const Text('No faces found.')
+                else if (state.imageData.faceCount == 1)
+                  OutlinedButton(
+                      onPressed: () {}, child: const Text('Add to database'))
+                else
+                  Text('To many faces: ${state.imageData.faceCount}'),
+                const SizedBox(width: 40)
+              ],
+            )
           ],
         );
       },
