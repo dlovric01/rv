@@ -8,7 +8,8 @@ app = Flask(__name__)
 def receive_data():
     data = request.json  # Assuming your Flutter app sends JSON data
     # Process the data as needed
-    response = {'imageProcessed': data['image']}
+    response = {'imageProcessed': data['image'],
+                'name': 'sven', 'faceNotFound': 'true'}
     print(data)
     return jsonify(response), 200
 

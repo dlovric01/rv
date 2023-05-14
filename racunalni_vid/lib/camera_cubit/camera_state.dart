@@ -7,5 +7,6 @@ class CameraState with _$CameraState {
     bool isLoading,
     CameraController? controller,
     String? name,
+    bool faceNotFound,
   ) = _Loaded;
 }

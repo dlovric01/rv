@@ -20,24 +20,25 @@ mixin _$CameraState {
   bool get isLoading => throw _privateConstructorUsedError;
   CameraController? get controller => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
+  bool get faceNotFound => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(File? file, bool isLoading,
-            CameraController? controller, String? name)
+            CameraController? controller, String? name, bool faceNotFound)
         imageState,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(File? file, bool isLoading, CameraController? controller,
-            String? name)?
+            String? name, bool faceNotFound)?
         imageState,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(File? file, bool isLoading, CameraController? controller,
-            String? name)?
+            String? name, bool faceNotFound)?
         imageState,
     required TResult orElse(),
   }) =>
@@ -71,7 +72,11 @@ abstract class $CameraStateCopyWith<$Res> {
       _$CameraStateCopyWithImpl<$Res, CameraState>;
   @useResult
   $Res call(
-      {File? file, bool isLoading, CameraController? controller, String? name});
+      {File? file,
+      bool isLoading,
+      CameraController? controller,
+      String? name,
+      bool faceNotFound});
 }
 
 /// @nodoc
@@ -91,6 +96,7 @@ class _$CameraStateCopyWithImpl<$Res, $Val extends CameraState>
     Object? isLoading = null,
     Object? controller = freezed,
     Object? name = freezed,
+    Object? faceNotFound = null,
   }) {
     return _then(_value.copyWith(
       file: freezed == file
@@ -109,6 +115,10 @@ class _$CameraStateCopyWithImpl<$Res, $Val extends CameraState>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
+      faceNotFound: null == faceNotFound
+          ? _value.faceNotFound
+          : faceNotFound // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -120,7 +130,11 @@ abstract class _$$_LoadedCopyWith<$Res> implements $CameraStateCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {File? file, bool isLoading, CameraController? controller, String? name});
+      {File? file,
+      bool isLoading,
+      CameraController? controller,
+      String? name,
+      bool faceNotFound});
 }
 
 /// @nodoc
@@ -137,6 +151,7 @@ class __$$_LoadedCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? controller = freezed,
     Object? name = freezed,
+    Object? faceNotFound = null,
   }) {
     return _then(_$_Loaded(
       freezed == file
@@ -155,6 +170,10 @@ class __$$_LoadedCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
+      null == faceNotFound
+          ? _value.faceNotFound
+          : faceNotFound // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -162,7 +181,8 @@ class __$$_LoadedCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_Loaded implements _Loaded {
-  const _$_Loaded(this.file, this.isLoading, this.controller, this.name);
+  const _$_Loaded(
+      this.file, this.isLoading, this.controller, this.name, this.faceNotFound);
 
   @override
   final File? file;
@@ -172,10 +192,12 @@ class _$_Loaded implements _Loaded {
   final CameraController? controller;
   @override
   final String? name;
+  @override
+  final bool faceNotFound;
 
   @override
   String toString() {
-    return 'CameraState.imageState(file: $file, isLoading: $isLoading, controller: $controller, name: $name)';
+    return 'CameraState.imageState(file: $file, isLoading: $isLoading, controller: $controller, name: $name, faceNotFound: $faceNotFound)';
   }
 
   @override
@@ -188,12 +210,14 @@ class _$_Loaded implements _Loaded {
                 other.isLoading == isLoading) &&
             (identical(other.controller, controller) ||
                 other.controller == controller) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.faceNotFound, faceNotFound) ||
+                other.faceNotFound == faceNotFound));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, file, isLoading, controller, name);
+      Object.hash(runtimeType, file, isLoading, controller, name, faceNotFound);
 
   @JsonKey(ignore: true)
   @override
@@ -205,32 +229,32 @@ class _$_Loaded implements _Loaded {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(File? file, bool isLoading,
-            CameraController? controller, String? name)
+            CameraController? controller, String? name, bool faceNotFound)
         imageState,
   }) {
-    return imageState(file, isLoading, controller, name);
+    return imageState(file, isLoading, controller, name, faceNotFound);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(File? file, bool isLoading, CameraController? controller,
-            String? name)?
+            String? name, bool faceNotFound)?
         imageState,
   }) {
-    return imageState?.call(file, isLoading, controller, name);
+    return imageState?.call(file, isLoading, controller, name, faceNotFound);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(File? file, bool isLoading, CameraController? controller,
-            String? name)?
+            String? name, bool faceNotFound)?
         imageState,
     required TResult orElse(),
   }) {
     if (imageState != null) {
-      return imageState(file, isLoading, controller, name);
+      return imageState(file, isLoading, controller, name, faceNotFound);
     }
     return orElse();
   }
@@ -265,8 +289,12 @@ class _$_Loaded implements _Loaded {
 }
 
 abstract class _Loaded implements CameraState {
-  const factory _Loaded(final File? file, final bool isLoading,
-      final CameraController? controller, final String? name) = _$_Loaded;
+  const factory _Loaded(
+      final File? file,
+      final bool isLoading,
+      final CameraController? controller,
+      final String? name,
+      final bool faceNotFound) = _$_Loaded;
 
   @override
   File? get file;
@@ -276,6 +304,8 @@ abstract class _Loaded implements CameraState {
   CameraController? get controller;
   @override
   String? get name;
+  @override
+  bool get faceNotFound;
   @override
   @JsonKey(ignore: true)
   _$$_LoadedCopyWith<_$_Loaded> get copyWith =>

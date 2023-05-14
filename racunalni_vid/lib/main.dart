@@ -47,7 +47,20 @@ class _CameraAppState extends State<CameraApp> {
                   return BlocListener<CameraCubit, CameraState>(
                     listener: (context, state) {
                       state.when(
-                        imageState: (file, isLoading, controller, _) {
+                        imageState:
+                            (file, isLoading, controller, _, faceNotFound) {
+                          if (faceNotFound) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                                    content: Text(
+                              'Face not found',
+                              style: TextStyle(
+                                fontSize: 40,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            )));
+                          }
                           if (state.isLoading) {
                             context.loaderOverlay.show();
                           } else {
@@ -59,7 +72,7 @@ class _CameraAppState extends State<CameraApp> {
                     child: BlocBuilder<CameraCubit, CameraState>(
                       builder: (context, state) {
                         return state.when(
-                          imageState: (file, isLoading, controller, name) {
+                          imageState: (file, _, controller, __, ___) {
                             if (file == null && controller != null) {
                               return CameraWidget(
                                 controller: controller,
@@ -109,12 +122,12 @@ class GeneratedImagePreview extends StatelessWidget {
                 Image.file(
                   File(file.path),
                 ),
-                if (state.name != null)
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 40),
+                if (state.name != null && !state.faceNotFound)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
                     child: Text(
-                      'Sven',
-                      style: TextStyle(
+                      state.name!,
+                      style: const TextStyle(
                         fontSize: 40,
                         color: Colors.white,
                         backgroundColor: Colors.black,

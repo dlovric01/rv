@@ -9,7 +9,14 @@ part 'camera_state.dart';
 part 'camera_cubit.freezed.dart';
 
 class CameraCubit extends Cubit<CameraState> {
-  CameraCubit() : super(const CameraState.imageState(null, true, null, null));
+  CameraCubit()
+      : super(const CameraState.imageState(
+          null,
+          true,
+          null,
+          null,
+          false,
+        ));
 
   late CameraController _controller;
   late List<CameraDescription> _cameras;
@@ -41,14 +48,32 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   Future<void> takePicture() async {
-    emit(state.copyWith(isLoading: true));
-    final xFile = await _controller.takePicture();
-    await sendImageForProcessing(File(xFile.path));
+    try {
+      emit(state.copyWith(
+        isLoading: true,
+        faceNotFound: false,
+        name: null,
+        file: null,
+      ));
+      final xFile = await _controller.takePicture();
+      final imageData = await sendImageForProcessing(File(xFile.path));
 
-    emit(state.copyWith(file: File(xFile.path), isLoading: false));
+      emit(state.copyWith(
+        file: File(imageData.file.path),
+        isLoading: false,
+        name: imageData.name,
+      ));
+    } catch (e) {
+      emit(state.copyWith(faceNotFound: true, isLoading: false));
+    }
   }
 
   Future<void> clearState() async {
-    emit(state.copyWith(file: null));
+    emit(state.copyWith(
+      file: null,
+      faceNotFound: false,
+      isLoading: false,
+      name: null,
+    ));
   }
 }

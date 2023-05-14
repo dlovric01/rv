@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:racunalni_vid/image_data.dart';
+
 var url =
     'http://192.168.1.10:80/api/data'; // Replace with your Flask server URL
 
-Future<File> sendImageForProcessing(File file) async {
+Future<ImageData> sendImageForProcessing(File file) async {
   try {
     List<int> imageBytes = await file.readAsBytes();
-    print(imageBytes);
 
     final body = {
       'image': imageBytes.toString(),
@@ -20,8 +21,12 @@ Future<File> sendImageForProcessing(File file) async {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(body),
     );
-    print(response);
+
     final sourceData = json.decode(response.body);
+    final name = sourceData['name'];
+    if (sourceData['faceNotFound'] == 'true') {
+      throw Exception('Face not found');
+    }
     final listOfBytes =
         jsonDecode((sourceData['imageProcessed'])) as List<dynamic>;
 
@@ -30,9 +35,11 @@ Future<File> sendImageForProcessing(File file) async {
 
     final processedFile = File(file.path);
     await processedFile.writeAsBytes(processedFileInBytes);
-    return processedFile;
+    return ImageData(
+      file: file,
+      name: name != 'unknown' ? name : null,
+    );
   } catch (e) {
-    print(e);
     rethrow;
   }
 }
