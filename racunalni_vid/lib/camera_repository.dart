@@ -5,8 +5,7 @@ import 'dart:convert';
 
 import 'package:racunalni_vid/image_data.dart';
 
-var url =
-    'http://192.168.1.10:80/api/data'; // Replace with your Flask server URL
+var url = 'http://192.168.1.7:80'; // Replace with your Flask server URL
 
 Future<ImageData> sendImageForProcessing(File file) async {
   try {
@@ -18,7 +17,7 @@ Future<ImageData> sendImageForProcessing(File file) async {
     };
 
     final response = await http.post(
-      Uri.parse(url),
+      Uri.parse('$url/process'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(body),
     );
@@ -37,4 +36,31 @@ Future<ImageData> sendImageForProcessing(File file) async {
   } catch (e) {
     rethrow;
   }
+}
+
+Future<ImageData> addUserToDatabase(File file, String username) async {
+  List<int> imageBytes = await file.readAsBytes();
+  String base64 = base64Encode(imageBytes);
+  final body = {
+    'username': username,
+    'image': base64,
+  };
+
+  final response = await http.post(
+    Uri.parse('$url/upload'),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode(body),
+  );
+
+  final sourceData = json.decode(response.body);
+
+  final name = sourceData['username'];
+  final bytes = base64Decode(sourceData['image']);
+  final processedFile = await File(file.path).writeAsBytes(bytes);
+
+  return ImageData(
+    file: processedFile,
+    name: name,
+    faceCount: sourceData['face_count'],
+  );
 }

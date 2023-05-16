@@ -3,12 +3,21 @@ import base64
 import face_recognition
 import cv2
 import numpy as np
+from supabase import create_client,Client
+import uuid
+from bla import get_last_user_data
+
+
+
+supabase_url = "https://hlgiwyxivhxlkziqxgyp.supabase.co"
+supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZ2l3eXhpdmh4bGt6aXF4Z3lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODQyNjM2MTEsImV4cCI6MTk5OTgzOTYxMX0.6D74Im4mZ4rLWU74A7qQqkfxdACApdj79vfjwv8b_Ko"
+supabase: Client = create_client(supabase_url,supabase_key)
 
 app = Flask(__name__)
 
 
-@app.route('/api/data', methods=['POST'])
-def receive_data():
+@app.route('/process', methods=['POST'])
+def process():
     data = request.json  # Assuming your Flutter app sends JSON data
     # Process the data as needed
     image_data_base64 = data['image']
@@ -45,6 +54,27 @@ def receive_data():
 
     return jsonify(response_data), 200
 
+@app.route('/upload', methods=['POST'])
+def upload():
+    data = request.json  
+
+    image_data_base64 = data['image']
+    username = data['username']
+
+    image_data = {
+        "username": username,
+        "image": image_data_base64,
+    }
+    supabase.table('users').insert(image_data).execute()
+
+    return {
+        "username": username,
+        "image": image_data_base64
+    }
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+
+

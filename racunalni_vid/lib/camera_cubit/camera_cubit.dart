@@ -19,7 +19,7 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(isLoading: true));
     _cameras = await availableCameras();
 
-    _controller = CameraController(_cameras[0], ResolutionPreset.max);
+    _controller = CameraController(_cameras[1], ResolutionPreset.max);
 
     await _controller.initialize().then((_) {}).catchError((Object e) {
       if (e is CameraException) {
@@ -40,17 +40,35 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   Future<void> takePicture() async {
-    emit(state.copyWith(isLoading: true, imageData: const ImageData()));
-    final xFile = await _controller.takePicture();
+    try {
+      emit(state.copyWith(isLoading: true, imageData: const ImageData()));
+      final xFile = await _controller.takePicture();
 
-    final imageData = await sendImageForProcessing(File(xFile.path));
+      final imageData = await sendImageForProcessing(File(xFile.path));
 
-    emit(state.copyWith(imageData: imageData, isLoading: false));
+      emit(state.copyWith(imageData: imageData, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
   }
 
   Future<void> clearState() async {
     emit(state.copyWith(
-        imageData: const ImageData(faceCount: null, file: null, name: null),
-        isLoading: false));
+      imageData: const ImageData(faceCount: null, file: null, name: null),
+      isLoading: false,
+    ));
+  }
+
+  Future<void> addToDatabase(File file, String username) async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      final imageData = await addUserToDatabase(file, username);
+      emit(state.copyWith(
+        imageData: imageData,
+        isLoading: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
   }
 }

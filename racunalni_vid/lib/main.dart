@@ -74,9 +74,11 @@ class _CameraAppState extends State<CameraApp> {
                                 cameraCubit: _cameraCubit,
                               );
                             } else if (imageData.file != null) {
-                              return GeneratedImagePreview(
-                                file: imageData.file!,
-                                cameraCubit: _cameraCubit,
+                              return SingleChildScrollView(
+                                child: GeneratedImagePreview(
+                                  file: imageData.file!,
+                                  cameraCubit: _cameraCubit,
+                                ),
                               );
                             } else {
                               return const LoadingIndicator();
@@ -117,18 +119,18 @@ class GeneratedImagePreview extends StatelessWidget {
                 Image.file(
                   File(file.path),
                 ),
-                // if (state.imageData!.name != null && !state.faceNotFound)
-                //   Padding(
-                //     padding: const EdgeInsets.only(bottom: 40),
-                //     child: Text(
-                //       state.name!,
-                //       style: const TextStyle(
-                //         fontSize: 40,
-                //         color: Colors.white,
-                //         backgroundColor: Colors.black,
-                //       ),
-                //     ),
-                //   )
+                if (state.imageData.name != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Text(
+                      state.imageData.name!,
+                      style: const TextStyle(
+                        fontSize: 40,
+                        color: Colors.white,
+                        backgroundColor: Colors.black,
+                      ),
+                    ),
+                  )
               ],
             ),
             Row(
@@ -140,19 +142,63 @@ class GeneratedImagePreview extends StatelessWidget {
                   },
                   icon: const Icon(Icons.arrow_back),
                 ),
-                if (state.imageData.faceCount == 0)
-                  const Text('No faces found.')
-                else if (state.imageData.faceCount == 1)
-                  OutlinedButton(
-                      onPressed: () {}, child: const Text('Add to database'))
-                else
-                  Text('To many faces: ${state.imageData.faceCount}'),
+                if (state.imageData.name == null) ...[
+                  if (state.imageData.faceCount == 0)
+                    const Text('No faces found.')
+                  else if (state.imageData.faceCount == 1)
+                    _buildButton(context)
+                  else
+                    Text('To many faces: ${state.imageData.faceCount}'),
+                ] else
+                  const Text('User added to database.'),
                 const SizedBox(width: 40)
               ],
             )
           ],
         );
       },
+    );
+  }
+
+  OutlinedButton _buildButton(BuildContext context) {
+    return OutlinedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            String username = '';
+
+            return AlertDialog(
+              title: const Text('Enter Username'),
+              content: TextField(
+                onChanged: (value) {
+                  username = value;
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Perform your submit action here, passing the entered username
+                    cameraCubit.addToDatabase(file, username);
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: const Text('Add to database'),
     );
   }
 }
