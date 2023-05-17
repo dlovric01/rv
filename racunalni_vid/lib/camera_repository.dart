@@ -26,12 +26,18 @@ Future<ImageData> sendImageForProcessing(File file) async {
 
     final name = sourceData['name'];
     final bytes = base64Decode(sourceData['modified_image_data']);
-    final processedFile = await File(file.path).writeAsBytes(bytes);
+
+    // Generate a new unique file path for the processed file
+    final processedFilePath = '${file.path}_processed';
+
+    final processedFile = await File(processedFilePath).writeAsBytes(bytes);
 
     return ImageData(
-      file: processedFile,
+      initialFile: file,
+      processedFile: processedFile,
       name: name != 'unknown' ? name : null,
       faceCount: sourceData['face_count'],
+      exists: sourceData['exists'],
     );
   } catch (e) {
     rethrow;
@@ -56,10 +62,13 @@ Future<ImageData> addUserToDatabase(File file, String username) async {
 
   final name = sourceData['username'];
   final bytes = base64Decode(sourceData['image']);
-  final processedFile = await File(file.path).writeAsBytes(bytes);
+  // Generate a new unique file path for the processed file
+  final processedFilePath = '${file.path}_processed_uploaded';
 
+  final processedFile = await File(processedFilePath).writeAsBytes(bytes);
   return ImageData(
-    file: processedFile,
+    initialFile: file,
+    processedFile: processedFile,
     name: name,
     faceCount: sourceData['face_count'],
   );

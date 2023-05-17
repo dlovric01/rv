@@ -16,9 +16,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ImageData {
-  File? get file => throw _privateConstructorUsedError;
+  File? get processedFile => throw _privateConstructorUsedError;
+  File? get initialFile => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
   int? get faceCount => throw _privateConstructorUsedError;
+  bool get exists => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ImageDataCopyWith<ImageData> get copyWith =>
@@ -30,7 +32,12 @@ abstract class $ImageDataCopyWith<$Res> {
   factory $ImageDataCopyWith(ImageData value, $Res Function(ImageData) then) =
       _$ImageDataCopyWithImpl<$Res, ImageData>;
   @useResult
-  $Res call({File? file, String? name, int? faceCount});
+  $Res call(
+      {File? processedFile,
+      File? initialFile,
+      String? name,
+      int? faceCount,
+      bool exists});
 }
 
 /// @nodoc
@@ -46,14 +53,20 @@ class _$ImageDataCopyWithImpl<$Res, $Val extends ImageData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? file = freezed,
+    Object? processedFile = freezed,
+    Object? initialFile = freezed,
     Object? name = freezed,
     Object? faceCount = freezed,
+    Object? exists = null,
   }) {
     return _then(_value.copyWith(
-      file: freezed == file
-          ? _value.file
-          : file // ignore: cast_nullable_to_non_nullable
+      processedFile: freezed == processedFile
+          ? _value.processedFile
+          : processedFile // ignore: cast_nullable_to_non_nullable
+              as File?,
+      initialFile: freezed == initialFile
+          ? _value.initialFile
+          : initialFile // ignore: cast_nullable_to_non_nullable
               as File?,
       name: freezed == name
           ? _value.name
@@ -63,6 +76,10 @@ class _$ImageDataCopyWithImpl<$Res, $Val extends ImageData>
           ? _value.faceCount
           : faceCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      exists: null == exists
+          ? _value.exists
+          : exists // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -74,7 +91,12 @@ abstract class _$$_ImageDataCopyWith<$Res> implements $ImageDataCopyWith<$Res> {
       __$$_ImageDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({File? file, String? name, int? faceCount});
+  $Res call(
+      {File? processedFile,
+      File? initialFile,
+      String? name,
+      int? faceCount,
+      bool exists});
 }
 
 /// @nodoc
@@ -88,14 +110,20 @@ class __$$_ImageDataCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? file = freezed,
+    Object? processedFile = freezed,
+    Object? initialFile = freezed,
     Object? name = freezed,
     Object? faceCount = freezed,
+    Object? exists = null,
   }) {
     return _then(_$_ImageData(
-      file: freezed == file
-          ? _value.file
-          : file // ignore: cast_nullable_to_non_nullable
+      processedFile: freezed == processedFile
+          ? _value.processedFile
+          : processedFile // ignore: cast_nullable_to_non_nullable
+              as File?,
+      initialFile: freezed == initialFile
+          ? _value.initialFile
+          : initialFile // ignore: cast_nullable_to_non_nullable
               as File?,
       name: freezed == name
           ? _value.name
@@ -105,6 +133,10 @@ class __$$_ImageDataCopyWithImpl<$Res>
           ? _value.faceCount
           : faceCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      exists: null == exists
+          ? _value.exists
+          : exists // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -112,18 +144,28 @@ class __$$_ImageDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ImageData implements _ImageData {
-  const _$_ImageData({this.file, this.name, this.faceCount});
+  const _$_ImageData(
+      {this.processedFile,
+      this.initialFile,
+      this.name,
+      this.faceCount,
+      this.exists = false});
 
   @override
-  final File? file;
+  final File? processedFile;
+  @override
+  final File? initialFile;
   @override
   final String? name;
   @override
   final int? faceCount;
+  @override
+  @JsonKey()
+  final bool exists;
 
   @override
   String toString() {
-    return 'ImageData(file: $file, name: $name, faceCount: $faceCount)';
+    return 'ImageData(processedFile: $processedFile, initialFile: $initialFile, name: $name, faceCount: $faceCount, exists: $exists)';
   }
 
   @override
@@ -131,14 +173,19 @@ class _$_ImageData implements _ImageData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ImageData &&
-            (identical(other.file, file) || other.file == file) &&
+            (identical(other.processedFile, processedFile) ||
+                other.processedFile == processedFile) &&
+            (identical(other.initialFile, initialFile) ||
+                other.initialFile == initialFile) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.faceCount, faceCount) ||
-                other.faceCount == faceCount));
+                other.faceCount == faceCount) &&
+            (identical(other.exists, exists) || other.exists == exists));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, file, name, faceCount);
+  int get hashCode => Object.hash(
+      runtimeType, processedFile, initialFile, name, faceCount, exists);
 
   @JsonKey(ignore: true)
   @override
@@ -149,16 +196,22 @@ class _$_ImageData implements _ImageData {
 
 abstract class _ImageData implements ImageData {
   const factory _ImageData(
-      {final File? file,
+      {final File? processedFile,
+      final File? initialFile,
       final String? name,
-      final int? faceCount}) = _$_ImageData;
+      final int? faceCount,
+      final bool exists}) = _$_ImageData;
 
   @override
-  File? get file;
+  File? get processedFile;
+  @override
+  File? get initialFile;
   @override
   String? get name;
   @override
   int? get faceCount;
+  @override
+  bool get exists;
   @override
   @JsonKey(ignore: true)
   _$$_ImageDataCopyWith<_$_ImageData> get copyWith =>

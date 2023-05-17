@@ -19,7 +19,7 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(isLoading: true));
     _cameras = await availableCameras();
 
-    _controller = CameraController(_cameras[1], ResolutionPreset.max);
+    _controller = CameraController(_cameras[0], ResolutionPreset.max);
 
     await _controller.initialize().then((_) {}).catchError((Object e) {
       if (e is CameraException) {
@@ -43,10 +43,15 @@ class CameraCubit extends Cubit<CameraState> {
     try {
       emit(state.copyWith(isLoading: true, imageData: const ImageData()));
       final xFile = await _controller.takePicture();
+      emit(state.copyWith(imageData: ImageData(initialFile: File(xFile.path))));
+
+      print(state);
 
       final imageData = await sendImageForProcessing(File(xFile.path));
+      print(state);
 
       emit(state.copyWith(imageData: imageData, isLoading: false));
+      print(state);
     } catch (e) {
       emit(state.copyWith(isLoading: false));
     }
@@ -54,7 +59,8 @@ class CameraCubit extends Cubit<CameraState> {
 
   Future<void> clearState() async {
     emit(state.copyWith(
-      imageData: const ImageData(faceCount: null, file: null, name: null),
+      imageData: const ImageData(
+          faceCount: null, initialFile: null, processedFile: null, name: null),
       isLoading: false,
     ));
   }
