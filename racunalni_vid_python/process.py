@@ -4,10 +4,14 @@ import cv2
 from supabase import create_client,Client
 from functions import get_list_of_recognized_users,get_image_details,append_username_to_image,cut_image_for_upload
 
+# Set the Supabase URL and key
 supabase_url = "https://hlgiwyxivhxlkziqxgyp.supabase.co"
 supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZ2l3eXhpdmh4bGt6aXF4Z3lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODQyNjM2MTEsImV4cCI6MTk5OTgzOTYxMX0.6D74Im4mZ4rLWU74A7qQqkfxdACApdj79vfjwv8b_Ko"
-supabase: Client = create_client(supabase_url,supabase_key)
 
+# Create a Supabase client using the provided URL and key
+supabase: Client = create_client(supabase_url, supabase_key)
+
+# Create a Flask app
 app = Flask(__name__)
 
 
