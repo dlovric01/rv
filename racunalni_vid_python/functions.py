@@ -30,58 +30,87 @@ def get_image_details(image_data_base64):
     return face_locations,rgb_image,image
 
 
-def get_list_of_recognized_users(rgb_image,face_locations):
+def get_list_of_recognized_users(rgb_image, face_locations):
+    # Create a query to retrieve all records from the 'users' table in the Supabase database
     query = supabase.from_('users').select('*')
+    
+    # Execute the query and get the result
     result = query.execute()
 
+    # Create an empty list to store the known images from the result
     known_images = []
 
+    # Extract the 'image' field from each record in the result and add it to the list of known images
     for i in result.data:
         known_images.append(i['image'])
 
-    usernameIndexes,recognizedFaceIndexes =compare(known_images,rgb_image,face_locations)
+    # Compare the known images with the RGB image and face locations to identify matches
+    usernameIndexes, recognizedFaceIndexes = compare(known_images, rgb_image, face_locations)
+
+    # Create an empty list to store the usernames of recognized users
     usernames = []
+
+    # Extract the usernames corresponding to the matched face indexes
     for i in usernameIndexes:
         usernames.append(result.data[i]['username'])
-    returnable = [None]*len(face_locations)
 
+    # Create a list with None values, one for each face location
+    returnable = [None] * len(face_locations)
 
-    for index,i in enumerate(recognizedFaceIndexes):
-        returnable[i]=usernames[index]
+    # Assign the usernames to the respective face locations in the returnable list
+    for index, i in enumerate(recognizedFaceIndexes):
+        returnable[i] = usernames[index]
 
+    # Return the list of recognized users
     return returnable
 
 
 
-def compare(images,rgb_image_unknown,face_locations_unknown):
+def compare(images, rgb_image_unknown, face_locations_unknown):
+    # Create an empty list to store the known face encodings
     known_encodings = []
+
+    # Iterate over the list of known images
     for i in images:
+        # Decode the base64 image data and convert it to a numpy array
         image_data_bytes = base64.b64decode(i)
-        image_array = np.frombuffer(image_data_bytes,dtype=np.uint8)
+        image_array = np.frombuffer(image_data_bytes, dtype=np.uint8)
+
+        # Decode the image array and convert it to RGB format
         image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
         rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # Locate faces in the RGB image and compute face encodings
         face_locations = face_recognition.face_locations(rgb_image)
         face_encodings = face_recognition.face_encodings(rgb_image, face_locations)[0]
+
+        # Add the face encodings to the list of known encodings
         known_encodings.append(face_encodings)
 
-   
+    # Compute face encodings for the unknown RGB image and face locations
     face_encodings = face_recognition.face_encodings(rgb_image_unknown, face_locations_unknown)
 
+    # Create empty lists to store the indexes of recognized usernames and recognized face indexes
     usernameIndexes = []
-    recognizedFaceIndexes =[]
+    recognizedFaceIndexes = []
 
-    for index,i in enumerate(face_encodings):
-        result = face_recognition.compare_faces(known_encodings,i,tolerance=0.6)
+    # Compare the unknown face encodings with the known encodings
+    for index, i in enumerate(face_encodings):
+        result = face_recognition.compare_faces(known_encodings, i, tolerance=0.6)
         print(result)
+
         try:
+            # Find the index of the first True value in the result list
             recognizedUserIndex = result.index(True)
+
+            # Append the recognized user index and face index to the respective lists
             usernameIndexes.append(recognizedUserIndex)
             recognizedFaceIndexes.append(index)
-        except:
-            print("True not found in the list.")
+        except ValueError:
+            print("No maching faces found.")
 
-
-    return usernameIndexes,recognizedFaceIndexes
+    # Return the lists of recognized usernames and recognized face indexes
+    return usernameIndexes, recognizedFaceIndexes
     
 
 def append_username_to_image(left,right,top,bottom,usernames,index,image):
